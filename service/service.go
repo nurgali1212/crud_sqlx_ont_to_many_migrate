@@ -16,11 +16,17 @@ type BookListServive interface {
 type CreateBookInput struct {
 	Title      string `json:"title"`
 	Author     string `json:"author" `
-	CategoryID uint   `json:"category_id"`
+
 }
 
 type CreateCategoryinput struct {
 	Genre	string	`json:"genre"`
+}
+
+type CreateBookCategoryinput struct {
+	Book_id     uint `json:"book_id" db:"book_id"`
+	Category_id uint `json:"category_id" db:"category_id"`
+
 }
 type CategoryService interface {
 	GetAllCategoryService() ([]model.Category, error)
@@ -28,6 +34,15 @@ type CategoryService interface {
 	GetByIdC(id string) (model.Category, error)
 	DeleteC(id string) error
 	UpdateC(input model.Category) error
+}
+
+type BookCategoryService interface {
+	GetAllBookCategoryService() ([]model.BookCategory, error)
+	CreateBookCategoryService(bookcategory model.BookCategory) (string, error)
+	GetByIdBookCategoryService(id string) (model.BookCategory, error)
+	DeleteBookCategoryService(id string) error
+	UpdateBookCategoryService(input model.BookCategory) error
+
 }
 type Service struct {
 	repo *repository.Repository
@@ -89,6 +104,38 @@ func (s *Service) Delete(id string) error {
 }
 // POST BOOK
 func (s *Service) Create(input model.Book) (model.Book, error) {
-	// book := model.Book{Author: input.Author, Title: input.Title, CategoryID: input.CategoryID}
+
 	return s.repo.CreateBook(input)
+}
+
+
+
+// get BookCategory
+func (s *Service) GetAllBookCategoryService() ([]model.BookCategory, error) {
+	return s.repo.GetAllBookCategoryRepo()
+}
+
+
+//Create Category
+func (s *Service) CreateBookCategoryService(input model.BookCategory) (model.BookCategory, error) {
+	return s.repo.CreateBookCategoryRepo(input)
+}
+//get id Category
+func (s *Service) GetByIdBookCategoryService(id string) (model.BookCategory, error) {
+	return s.repo.GetByIdBookCategoryRepo(id)
+}
+// put Category
+func (s *Service) UpdateBookCategoryService(bookcategoryId int, input model.UpdateBookCategoryinput) error {
+	bookcategory, err := s.repo.GetByIdBookCategoryRepo(fmt.Sprint(bookcategoryId))
+	if err != nil {
+		return err
+	}
+	bookcategory.Book_id = *input.Book_id
+	bookcategory.Category_id = *input.Category_id
+	
+	return s.repo.UpdateBookCategoryRepo(bookcategory)
+}
+//deleteCategory
+func (s *Service) DeleteBookCategoryService(id string) error {
+	return s.repo.DeleteBookCategoryRepo(id)
 }

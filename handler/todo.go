@@ -183,3 +183,91 @@ func (h *Handler) deleteBookH(c *gin.Context) {
 		"message": "deleted",
 	})
 }
+
+
+//get BookCategory
+func (h *Handler) getAllBookCategoryH(c *gin.Context) {
+	lists, err := h.service.GetAllBookCategoryService()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "StatusInternalServerError",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, lists)
+}
+
+
+//GET ID BOOKCategory
+func (h *Handler) getBookCategoryByIdH(c *gin.Context) {
+	id := c.Param("id")
+	lists, err := h.service.GetByIdBookCategoryService(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "StatusInternalServerError",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, lists)
+}
+
+//PUT BOOKCategory
+func (h *Handler) updateBookCategoryH(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid id param",
+		})
+		return
+	}
+
+	var input model.UpdateBookCategoryinput
+	if err := c.BindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid id param",
+		})
+		return
+	}
+
+	if err := h.service.UpdateBookCategoryService(id, input); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "StatusInternalServerError",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "updated",
+	})
+}
+
+//POST BOOKCategory
+func (h *Handler) createBookCategoryH(c *gin.Context) {
+	var input model.BookCategory
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	newBookCategory, err := h.service.CreateBookCategoryService(input)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Oshibka",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, newBookCategory)
+}
+//DELETE BOOKCategory
+func (h *Handler) deleteBookCategoryH(c *gin.Context) {
+	id := c.Param("id")
+	err := h.service.DeleteBookCategoryService(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "StatusInternalServerError",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "deleted",
+	})
+}

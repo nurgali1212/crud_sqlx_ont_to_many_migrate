@@ -19,6 +19,7 @@ func (h *Handler) SetupRouter() *gin.Engine {
 
 	book := router.Group("/")
 	category := router.Group(("/"))
+	bookcategory := router.Group(("/"))
 	{
 		//BOOK
 		book.POST("book", h.createBookH)
@@ -33,6 +34,14 @@ func (h *Handler) SetupRouter() *gin.Engine {
 		category.GET("category/:id", h.getCategoryByIdH)
 		category.PUT("category/:id", h.updateCategoryH)
 		category.DELETE("category/:id", h.deleteBookH)
+
+		//BOOKCATEGORY
+		bookcategory.GET("bookcategory", h.getAllBookCategoryH)
+		bookcategory.GET("bookcategory/:id", h.getBookCategoryByIdH)
+		bookcategory.POST("bookcategory", h.createBookCategoryH)
+		bookcategory.PUT("bookcategory/:id", h.updateBookCategoryH)
+		bookcategory.DELETE("bookcategory/:id", h.deleteBookCategoryH)
+
 
 	}
 

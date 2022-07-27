@@ -22,10 +22,19 @@ type CategoryList interface {
 	UpdateCategoryRepo(input model.Category) error
 }
 
+type BookCategoryList interface {
+	GetAllBookCategoryRepo() ([]model.BookCategory, error)
+	CreateBookCategoryRepo(bookcategory model.BookCategory) (model.Category, error)
+	GetByIdBookCategoryRepo(bookcategoryId string) (model.BookCategory, error)
+	DeleteBookCategoryRepo(bookcategoryId string) error
+	UpdateBookCategoryRepo(input model.BookCategory) error
+
+}
+
 type CreateBookInput struct {
 	Title      string `json:"title"`
 	Author     string `json:"author" `
-	CategoryID uint   `json:"category_id"`
+
 }
 type Repository struct {
 	db *database.DB
@@ -84,7 +93,7 @@ func (r *Repository) GetByIdBook(bookId string) (book model.Book, err error) {
 //POST BOOK
 func (r *Repository) CreateBook(book model.Book) (model.Book, error) {
 	fmt.Println(book)
-	_, err := r.db.Conn.Exec("INSERT INTO book(title, author, category_id) VALUES($1, $2, $3)", book.Title, book.Author, book.CategoryId)
+	_, err := r.db.Conn.Exec("INSERT INTO book(title, author, category_id) VALUES($1, $2, $3)", book.Title, book.Author)
 
 	if err != nil {
 		return book, err
@@ -100,6 +109,42 @@ func (r *Repository) DeleteBook(bookId string) (err error) {
 
 func (r *Repository) UpdateBook(input model.Book) (err error) {
 	_, err = r.db.Conn.NamedExec("UPDATE book SET title=:title, author=:author WHERE id=:id", input)
+
+	return
+}
+
+
+
+//GET BOOKCategory
+func (r *Repository) GetAllBookCategoryRepo() (bookcategory []model.BookCategory, err error) {
+	return bookcategory, r.db.Conn.Select(&bookcategory, "SELECT * FROM bookcategory ORDER BY id")
+
+}
+
+//GET ID BOOKCategory
+func (r *Repository) GetByIdBookCategoryRepo(bookcategoryId string) (bookcategory model.BookCategory, err error) {
+	return bookcategory, r.db.Conn.Get(&bookcategory, "SELECT * FROM bookcategory WHERE id = $1 ORDER BY id", bookcategoryId)
+}
+
+//POST BOOKCategory
+func (r *Repository) CreateBookCategoryRepo(bookcategory model.BookCategory) (model.BookCategory, error) {
+	fmt.Println(bookcategory)
+	_, err := r.db.Conn.Exec("INSERT INTO bookcategory(book_id,category_id) VALUES($1, $2)", bookcategory.Book_id, bookcategory.Category_id)
+
+	if err != nil {
+		return bookcategory, err
+	}
+	return bookcategory, nil
+}
+//DELETE BOOKCategory
+func (r *Repository) DeleteBookCategoryRepo(bookcategoryId string) (err error) {
+	_, err = r.db.Conn.Exec("DELETE FROM bookcategory WHERE id=$1;", bookcategoryId)
+	return
+}
+//PUT BOOKCategory
+
+func (r *Repository) UpdateBookCategoryRepo(input model.BookCategory) (err error) {
+	_, err = r.db.Conn.NamedExec("UPDATE bookcategory SET book_id=:book_id, category_id=:category_id WHERE id=:id", input)
 
 	return
 }

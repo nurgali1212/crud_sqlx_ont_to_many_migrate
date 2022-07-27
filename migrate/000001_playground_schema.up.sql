@@ -7,10 +7,18 @@ CREATE table IF NOT EXISTS category (
 CREATE TABLE IF NOT EXISTS book(
     id serial PRIMARY KEY,
     title varchar(255) NOT NULL,
-    author TEXT NOT NULL,
-	category_id integer REFERENCES category (id)
+    author TEXT NOT NULL
+
   
 );
+
+CREATE TABLE IF NOT EXISTS bookcategory(
+    id serial PRIMARY KEY,
+    book_id int NOT NULL REFERENCES book,
+	category_id int NOT NULL REFERENCES category
+  
+);
+
 
 insert into category(genre)
 values
@@ -19,15 +27,26 @@ values
 ('Comedy'),
 ('Triller');
 
-insert into book (author,title,category_id)
+insert into book (author,title)
 values
-('Stephene Meyer','Twilight',1),
-('Cristopher Nolan','Interstellar',2),
-('Nurlan Saburov','StandUp',3),
-('Timur Bekmambetov','Find',4);
+('Stephene Meyer','Twilight'),
+('Cristopher Nolan','Interstellar'),
+('Nurlan Saburov','StandUp'),
+('Timur Bekmambetov','Find');
 
-Select * from book
 
-join category on book.category_id = category.id;
+
+insert into bookcategory(book_id,category_id)
+values
+(1,2),
+(2,1),
+(3,2),
+(4,3),
+(2,4),
+(4,1);
+
+SELECT * FROM book 
+left  JOIN bookcategory  ON bookcategory.book_id = book.id
+left join category on bookcategory.category_id =category.id;
 
 COMMIT;
